@@ -443,13 +443,30 @@ func (kc *kClient) Call(ctx context.Context, method string, request, response in
 	return err
 }
 
-func (kc *kClient) initDebugService() {
-	if ds := kc.opt.DebugService; ds != nil {
-		ds.RegisterProbeFunc(diagnosis.DestServiceKey, diagnosis.WrapAsProbeFunc(kc.opt.Svr.ServiceName))
-		ds.RegisterProbeFunc(diagnosis.OptionsKey, diagnosis.WrapAsProbeFunc(kc.opt.DebugInfo))
-		ds.RegisterProbeFunc(diagnosis.ChangeEventsKey, kc.opt.Events.Dump)
-		ds.RegisterProbeFunc(diagnosis.ServiceInfoKey, diagnosis.WrapAsProbeFunc(kc.svcInfo))
+type clientDebugInfo struct {
+	serviceName string
+	debugInfo   utils.Slice
+	evt         event.Queue
+	svcInfo     *serviceinfo.ServiceInfo
+}
+
+func initDebugService(ds diagnosis.Service, cdi clientDebugInfo) {
+	if ds != nil {
+		ds.RegisterProbeFunc(diagnosis.DestServiceKey, diagnosis.WrapAsProbeFunc(cdi.serviceName))
+		ds.RegisterProbeFunc(diagnosis.OptionsKey, diagnosis.WrapAsProbeFunc(cdi.debugInfo))
+		ds.RegisterProbeFunc(diagnosis.ChangeEventsKey, cdi.evt.Dump)
+		ds.RegisterProbeFunc(diagnosis.ServiceInfoKey, diagnosis.WrapAsProbeFunc(cdi.svcInfo))
 	}
+}
+
+func (kc *kClient) initDebugService() {
+	cdi := clientDebugInfo{
+		serviceName: kc.opt.Svr.ServiceName,
+		debugInfo:   kc.opt.DebugInfo,
+		evt:         kc.opt.Events,
+		svcInfo:     kc.svcInfo,
+	}
+	initDebugService(kc.opt.DebugService, cdi)
 }
 
 func (kc *kClient) richRemoteOption() {
