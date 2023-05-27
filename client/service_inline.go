@@ -188,6 +188,7 @@ func (kc *serviceInlineClient) constructServerCtxWithMetadata(cliCtx context.Con
 	// forward transmission
 	kvs := make(map[string]string, 16)
 	metainfo.SaveMetaInfoToMap(cliCtx, kvs)
+	klog.CtxWarnf(cliCtx, "metakvs: %#v", kvs)
 	if len(kvs) > 0 {
 		serverCtx = metainfo.SetMetaInfoFromMap(serverCtx, kvs)
 	}
