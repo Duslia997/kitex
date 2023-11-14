@@ -318,6 +318,7 @@ func (s *server) invokeHandleEndpoint() endpoint.Endpoint {
 				err = kerrors.ErrPanic.WithCauseAndStack(fmt.Errorf("[happened in biz handler, method=%s] %s", methodName, handlerErr), string(debug.Stack()))
 				rpcStats := rpcinfo.AsMutableRPCStats(ri.Stats())
 				rpcStats.SetPanicked(err)
+				fmt.Printf("server panic: %#v\n", handlerErr)
 			}
 			rpcinfo.Record(ctx, ri, stats.ServerHandleFinish, err)
 			// clear session
