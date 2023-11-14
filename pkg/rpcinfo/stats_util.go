@@ -54,5 +54,6 @@ func ClientPanicToErr(ctx context.Context, panicInfo interface{}, ri RPCInfo, lo
 	if logErr {
 		klog.CtxErrorf(ctx, "%s", e.Error())
 	}
+	fmt.Printf("panic happened: %v\n", e.Error())
 	return e
 }

@@ -19,6 +19,7 @@ package client
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net"
 	"runtime/debug"
 
@@ -140,6 +141,8 @@ func (kc *serviceInlineClient) Call(ctx context.Context, method string, request,
 	var reportErr error
 	defer func() {
 		if panicInfo := recover(); panicInfo != nil {
+			fmt.Println("happend panic !!!!")
+			fmt.Printf("happend panic !!!!: %v", panicInfo)
 			reportErr = rpcinfo.ClientPanicToErr(ctx, panicInfo, ri, true)
 		}
 		kc.opt.TracerCtl.DoFinish(ctx, ri, reportErr)
