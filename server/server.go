@@ -23,7 +23,9 @@ import (
 	"fmt"
 	"net"
 	"reflect"
+	"runtime"
 	"runtime/debug"
+	"strings"
 	"sync"
 	"time"
 
@@ -282,6 +284,28 @@ func (s *server) Stop() (err error) {
 	return
 }
 
+func GetFunctionName(i interface{}, seps ...rune) string {
+	// 获取函数名称
+	fn := runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
+
+	// 用 seps 进行分割
+	fields := strings.FieldsFunc(fn, func(sep rune) bool {
+		for _, s := range seps {
+			if sep == s {
+				return true
+			}
+		}
+		return false
+	})
+
+	// fmt.Println(fields)
+
+	if size := len(fields); size > 0 {
+		return fields[size-1]
+	}
+	return ""
+}
+
 func (s *server) invokeHandleEndpoint() endpoint.Endpoint {
 	return func(ctx context.Context, args, resp interface{}) (err error) {
 		ri := rpcinfo.GetRPCInfo(ctx)
@@ -308,6 +332,7 @@ func (s *server) invokeHandleEndpoint() endpoint.Endpoint {
 		backup.BackupCtx(ctx)
 		err = implHandlerFunc(ctx, s.handler, args, resp)
 		klog.CtxWarnf(ctx, "end server resp: %v", resp)
+		klog.CtxWarnf(ctx, "handler name: %s", GetFunctionName(s.handler))
 		if err != nil {
 			if bizErr, ok := kerrors.FromBizStatusError(err); ok {
 				if setter, ok := ri.Invocation().(rpcinfo.InvocationSetter); ok {
