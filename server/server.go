@@ -299,11 +299,15 @@ func (s *server) invokeHandleEndpoint() endpoint.Endpoint {
 			// clear session
 			backup.ClearCtx()
 		}()
+		fmt.Printf("enter server invoke handle endpoint")
+		klog.CtxWarnf(ctx, "enter server invoke handle endpoint, method name: %s", methodName)
 		implHandlerFunc := s.svcInfo.MethodInfo(methodName).Handler()
+		klog.CtxWarnf(ctx, "enter server invoke handle endpoint, handler func: %v", implHandlerFunc)
 		rpcinfo.Record(ctx, ri, stats.ServerHandleStart, nil)
 		// set session
 		backup.BackupCtx(ctx)
 		err = implHandlerFunc(ctx, s.handler, args, resp)
+		klog.CtxWarnf(ctx, "end server resp: %v", resp)
 		if err != nil {
 			if bizErr, ok := kerrors.FromBizStatusError(err); ok {
 				if setter, ok := ri.Invocation().(rpcinfo.InvocationSetter); ok {
