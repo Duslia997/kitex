@@ -235,6 +235,7 @@ func WithRPCTimeout(d time.Duration) Option {
 		di.Push(fmt.Sprintf("WithRPCTimeout(%dms)", d.Milliseconds()))
 
 		rpcinfo.AsMutableRPCConfig(o.Configs).SetRPCTimeout(d)
+		klog.Warnf("client option set request timeout: %v", d)
 		o.Locks.Bits |= rpcinfo.BitRPCTimeout
 	}}
 }

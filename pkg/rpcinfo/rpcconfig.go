@@ -17,6 +17,7 @@
 package rpcinfo
 
 import (
+	"github.com/cloudwego/kitex/pkg/klog"
 	"sync"
 	"time"
 
@@ -180,6 +181,7 @@ func (r *rpcConfig) InteractionMode() InteractionMode {
 // Clone returns a copy of the current rpcConfig.
 func (r *rpcConfig) Clone() MutableRPCConfig {
 	r2 := rpcConfigPool.Get().(*rpcConfig)
+	klog.Warnf("clone timeout: %v", r.rpcTimeout)
 	*r2 = *r
 	return r2
 }

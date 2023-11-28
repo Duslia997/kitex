@@ -308,9 +308,13 @@ func (kc *kClient) initRPCInfo(ctx context.Context, method string, retryTimes in
 
 func applyCallOptions(ctx context.Context, cfg rpcinfo.MutableRPCConfig, svr remoteinfo.RemoteInfo, opt *client.Options) (context.Context, *callopt.CallOptions) {
 	cos := CallOptionsFromCtx(ctx)
+	fmt.Printf("len(cos) %v:\n", len(cos))
+	fmt.Printf("cos %v:\n", cos)
 	if len(cos) > 0 {
 		info, callOpts := callopt.Apply(cos, cfg, svr, opt.Locks, opt.HTTPResolver)
 		ctx = context.WithValue(ctx, ctxCallOptionInfoKey, info)
+		klog.CtxWarnf(ctx, "ctx option info %s:", info)
+		fmt.Printf("ctx option info %s:\n", info)
 		return ctx, callOpts
 	}
 	opt.Locks.ApplyLocks(cfg, svr)

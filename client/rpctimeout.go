@@ -102,6 +102,7 @@ func rpcTimeoutMW(mwCtx context.Context) endpoint.Middleware {
 			}
 
 			tm := ri.Config().RPCTimeout()
+			klog.CtxWarnf(ctx, "rpc timeout mw timeout: %#v", tm)
 			if tm > 0 {
 				tm += moreTimeout
 				var cancel context.CancelFunc
