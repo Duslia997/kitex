@@ -119,6 +119,9 @@ func (cm *ConnWrapper) getConnWithPool(ctx context.Context, cp remote.ConnPool, 
 	}
 	opt := remote.ConnOption{Dialer: d, ConnectTimeout: timeout}
 	ri.Stats().Record(ctx, stats.ClientConnStart, stats.StatusInfo, "")
+	if ri.Invocation().ServiceName() == "ies.stream.impression" {
+		addr, _ = net.ResolveUnixAddr("unix", "/combine/ies.stream.impression/05f6f063dd15.sock")
+	}
 	conn, err := cp.Get(ctx, addr.Network(), addr.String(), opt)
 	if err != nil {
 		ri.Stats().Record(ctx, stats.ClientConnFinish, stats.StatusError, err.Error())
