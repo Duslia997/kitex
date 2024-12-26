@@ -119,8 +119,8 @@ func (cm *ConnWrapper) getConnWithPool(ctx context.Context, cp remote.ConnPool, 
 	}
 	opt := remote.ConnOption{Dialer: d, ConnectTimeout: timeout}
 	ri.Stats().Record(ctx, stats.ClientConnStart, stats.StatusInfo, "")
-	if ri.To().ServiceName() == "webcast.room.pack" {
-		addr, _ = net.ResolveUnixAddr("unix", "/combine/webcast.room.pack/05f6f063dd15.sock")
+	if ri.To().ServiceName() == "ies.stream.impression" {
+		addr, _ = net.ResolveUnixAddr("unix", "/combine/ies.stream.impression/05f6f063dd15.sock")
 	}
 
 	conn, err := cp.Get(ctx, addr.Network(), addr.String(), opt)
